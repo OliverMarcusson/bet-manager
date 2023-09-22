@@ -4,6 +4,8 @@ import keyboard
 from colorama import just_fix_windows_console, Fore
 from time import sleep
 
+PLAYER_MONEY = lambda player: Fore.GREEN + str(player.money) + Fore.RESET if player.money > 0 else Fore.RED + str(player.money) + Fore.RESET
+
 class Player:
     def __init__(self, name: str, number: str, money=0) -> None:
         self.name: str = name
@@ -77,7 +79,7 @@ def delete_player(players):
     name = input("Name:")
     for i, player in enumerate(players):
         if player.name == name:
-            print(f"Are you sure you want to delete {player.name}? (Money: {player.money})")
+            print(f"Are you sure you want to delete {player.name}? (Money: {PLAYER_MONEY(player)})")
             choice = input("(Y/N):")
             
             if choice.upper() == "Y":
@@ -86,6 +88,7 @@ def delete_player(players):
     print(f"Couldn't find a player with the name '{name}'.")        
 
 def play_round(players):
+    print(Fore.CYAN + "Select players:" + Fore.RESET)
     active_players: list[Player] = []
     for i, player in enumerate(players):
         print(f"{i+1}. {player.name}")
@@ -95,9 +98,9 @@ def play_round(players):
         active_players.append(players[int(num)-1])
     system("cls")
     
-    print("Bets:")
+    print(Fore.CYAN + "Bets:" + Fore.RESET)
     for player in active_players:
-        bets = list(map(int, input(f"{player.name} ({player.money}):").split(",")))
+        bets = list(map(int, input(f"{player.name} ({PLAYER_MONEY(player)}):").split(",")))
         player.bets = bets
     system("cls")
     sleep(0.5)
@@ -106,7 +109,7 @@ def play_round(players):
         for i, hand in enumerate(player.bets):
             action = ""
             while True:
-                print(f"{player.name} Hand {i + 1} [of {len(player.bets)}] ({hand}):")
+                print(f"{player.name} Hand {Fore.CYAN + str(i + 1) + Fore.RESET} [of {Fore.CYAN + str(len(player.bets)) + Fore.RESET}] ({Fore.CYAN + str(hand) + Fore.RESET}):")
                 print("D. Double" if not action == "double" else Fore.CYAN + "D. Double" + Fore.RESET)
                 print("S. Split" if not action == "split" else Fore.CYAN + "S. Split" + Fore.RESET)
                 print("N. Next" if not action == "next" else Fore.CYAN + "N. Next" + Fore.RESET)
@@ -143,7 +146,7 @@ def play_round(players):
         for i, hand in enumerate(player.bets):
             action = ""
             while True:
-                print(f"{player.name} Hand {i + 1} [of {len(player.bets)}] ({hand}):")
+                print(f"{player.name} Hand {Fore.CYAN + str(i + 1) + Fore.RESET} [of {Fore.CYAN + str(len(player.bets)) + Fore.RESET}] ({Fore.CYAN + str(hand) + Fore.RESET}):")
                 print("B. Blackjack" if not action == "blackjack" else Fore.CYAN + "B. Blackjack" + Fore.RESET)
                 print("W. Win" if not action == "win" else Fore.GREEN + "W. Win" + Fore.RESET)
                 print("L. Loss" if not action == "loss" else Fore.RED + "L. Loss" + Fore.RESET)
@@ -178,20 +181,22 @@ def play_round(players):
             system("cls")
     
     system("cls")
-    print("Results:")
+    print(Fore.CYAN + "Results:" + Fore.RESET)
     for player in active_players:
-        print(f"{player.name} (Money: {player.money})")
+        print(f"{player.name} (Money: {PLAYER_MONEY(player)})")
     input()
 
 def main():
+    system("cls")
     just_fix_windows_console()
     players = load_players()
     while True:
+        print(Fore.CYAN + "Blackjack Bet Manager" + Fore.RESET)
         print("1. Start round")
         print("2. Add player")
         print("3. Remove player")
         print("4. Show Players")
-        print("5. Exit and Save")
+        print(Fore.YELLOW + "5. Exit and Save" + Fore.RESET)
         choice = input(":")
         
         match choice:
@@ -201,17 +206,20 @@ def main():
                 
             
             case "2":
+                system("cls")
                 new_player(players)
                 input()
                 
             case "3":
+                system("cls")
                 delete_player(players)
                 input()
                     
             case "4":
-                print("Current Players:")
+                system("cls")
+                print(Fore.CYAN + "Current Players:" + Fore.RESET)
                 for player in players:
-                    print(f"{player.name}, {player.number} (Money: {player.money})")
+                    print(f"{player.name}, {Fore.YELLOW + str(player.number) + Fore.RESET} (Money: {PLAYER_MONEY(player)})")
                 input()
                     
             case "5":
@@ -220,7 +228,7 @@ def main():
             
             case _:
                 print("Invalid selection.")
-                input()
+                sleep(1)
         
         system("cls")
 
