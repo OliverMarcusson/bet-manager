@@ -1,1 +1,4 @@
+build/
+dist/
+bet_manager.spec
 players.json

@@ -1,5 +1,5 @@
 import json
-from os import system
+from os import system, path
 import keyboard
 from colorama import just_fix_windows_console, Fore
 from time import sleep
@@ -49,6 +49,11 @@ def save_players(players: list[Player]):
 def load_players() -> list[Player]:
     players = []
     
+    if not path.exists("players.json"):
+        with open("players.json", "w", encoding="utf-8") as f:
+            f.write("")
+        return players
+    
     with open("players.json", encoding="utf-8") as f:
         json_string = f.read()
         
@@ -88,6 +93,11 @@ def delete_player(players):
     print(f"Couldn't find a player with the name '{name}'.")        
 
 def play_round(players):
+    if len(players) == 0:
+        print(Fore.RED + "There are currently no registered players." + Fore.RESET)
+        input(Fore.CYAN + "\nPress ENTER to continue." + Fore.RESET)
+        return
+    
     print(Fore.CYAN + "Select players:" + Fore.RESET)
     active_players: list[Player] = []
     for i, player in enumerate(players):
@@ -218,9 +228,12 @@ def main():
             case "4":
                 system("cls")
                 print(Fore.CYAN + "Current Players:" + Fore.RESET)
-                for player in players:
-                    print(f"{player.name}, {Fore.YELLOW + str(player.number) + Fore.RESET} (Money: {PLAYER_MONEY(player)})")
-                input()
+                if len(players) == 0:
+                    print(Fore.RED + "There are currently no registered players." + Fore.RESET)
+                else:
+                    for player in players:
+                        print(f"{player.name}, {Fore.YELLOW + str(player.number) + Fore.RESET} (Money: {PLAYER_MONEY(player)})")
+                input(Fore.CYAN + "\nPress ENTER to continue." + Fore.RESET)
                     
             case "5":
                 save_players(players)
