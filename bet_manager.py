@@ -1,6 +1,8 @@
 import json
 from os import system
 import keyboard
+from colorama import just_fix_windows_console, Fore
+from time import sleep
 
 class Player:
     def __init__(self, name: str, number: str, money=0) -> None:
@@ -98,65 +100,81 @@ def play_round(players):
         bets = list(map(int, input(f"{player.name} ({player.money}):").split(",")))
         player.bets = bets
     system("cls")
+    sleep(0.5)
     
     for player in active_players:
         for i, hand in enumerate(player.bets):
+            action = ""
             while True:
                 print(f"{player.name} Hand {i + 1} [of {len(player.bets)}] ({hand}):")
-                print("D. Double")
-                print("S. Split")
-                print("N. Next")
+                print("D. Double" if not action == "double" else Fore.CYAN + "D. Double" + Fore.RESET)
+                print("S. Split" if not action == "split" else Fore.CYAN + "S. Split" + Fore.RESET)
+                print("N. Next" if not action == "next" else Fore.CYAN + "N. Next" + Fore.RESET)
                 
                 key = keyboard.read_key(True)
                 match key:
                     case "d":
-                        player.double(i)
-                        break
-                    
+                        action = "double"
                     case "s":
-                        player.split()
-                        break
-                    
+                        action = "split"
                     case "n":
+                        action = "next"
+                    case "enter":
                         break
-                    
                     case _:
                         system("cls")
-            input("Press ENTER.")
+                system("cls")
+                
+            match action:
+                case "double":
+                    player.double(i)
+                case "split":
+                    player.split()
+                case _:
+                    system("cls")
+            sleep(0.5)
     
     system("cls")
     input("Press ENTER when round is over.")
     system("cls")
+    sleep(0.5)
     
     for player in active_players:
         for i, hand in enumerate(player.bets):
+            action = ""
             while True:
                 print(f"{player.name} Hand {i + 1} [of {len(player.bets)}] ({hand}):")
-                print("B. Blackjack")
-                print("W. Win")
-                print("L. Loss")
-                print("P. Push")
+                print("B. Blackjack" if not action == "blackjack" else Fore.CYAN + "B. Blackjack" + Fore.RESET)
+                print("W. Win" if not action == "win" else Fore.GREEN + "W. Win" + Fore.RESET)
+                print("L. Loss" if not action == "loss" else Fore.RED + "L. Loss" + Fore.RESET)
+                print("P. Push" if not action == "push" else Fore.YELLOW + "P. Push" + Fore.RESET)
                 
                 key = keyboard.read_key(True)
                 match key:
                     case "b":
-                        player.blackjack(i)
-                        break
-                    
+                        action = "blackjack"
                     case "w":
-                        player.win(i)
-                        break
-                    
+                        action = "win"
                     case "l":
-                        player.lose(i)
-                        break
-                    
+                        action = "loss"
                     case "p":
+                        action = "push"
+                    case "enter":
                         break
-                    
                     case _:
-                        system("cls")
-            input("Press ENTER.")
+                        pass
+                system("cls")
+                
+            match action:
+                case "blackjack":
+                    player.blackjack(i)
+                case "win":
+                    player.win(i)
+                case "loss":
+                    player.lose(i)
+                case _:
+                    system("cls")
+            sleep(0.5)
             system("cls")
     
     system("cls")
@@ -166,6 +184,7 @@ def play_round(players):
     input()
 
 def main():
+    just_fix_windows_console()
     players = load_players()
     while True:
         print("1. Start round")
